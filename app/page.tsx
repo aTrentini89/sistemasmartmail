@@ -25,7 +25,7 @@ export default function Home() {
 
     timeoutRef.current = setTimeout(() => {
       const scrollPosition = window.scrollY;
-      let closestSection: Element | null = null;
+      let closestSection: HTMLElement | null = null;
       let minDistance = Infinity;
 
       sections.forEach((sectionId) => {
@@ -35,12 +35,12 @@ export default function Home() {
           const distance = Math.abs(scrollPosition - sectionTop);
           if (distance < minDistance) {
             minDistance = distance;
-            closestSection = section;
+            closestSection = section as HTMLElement;
           }
         }
       });
 
-      if (closestSection) {
+      if (closestSection && closestSection instanceof HTMLElement) {
         const sectionRect = closestSection.getBoundingClientRect();
         const sectionTop = sectionRect.top + window.scrollY - HEADER_HEIGHT;
         const distanceFromTop = Math.abs(scrollPosition - sectionTop);
