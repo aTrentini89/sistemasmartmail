@@ -13,7 +13,6 @@ import Footer from '../components/Footer'
 export default function Home() {
   const [currentSection, setCurrentSection] = useState('hero')
   const [heroOpacity, setHeroOpacity] = useState(0)
-  const observerRef = useRef<IntersectionObserver | null>(null)
   const sections = ['hero', 'problema', 'solucao', 'beneficios', 'implementacao', 'contato']
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const contatoRef = useRef<HTMLDivElement>(null);
@@ -25,7 +24,7 @@ export default function Home() {
 
     timeoutRef.current = setTimeout(() => {
       const scrollPosition = window.scrollY;
-      let closestSection: Element | null = null;
+      let closestSection: HTMLElement | null = null;
       let minDistance = Infinity;
 
       sections.forEach((sectionId) => {
@@ -35,7 +34,7 @@ export default function Home() {
           const distance = Math.abs(scrollPosition - sectionTop);
           if (distance < minDistance) {
             minDistance = distance;
-            closestSection = section as Element;
+            closestSection = section;
           }
         }
       });
@@ -66,7 +65,6 @@ export default function Home() {
         }
       }
 
-      // Verifica especificamente para a seção de contato
       if (contatoRef.current) {
         const contatoRect = contatoRef.current.getBoundingClientRect();
         if (contatoRect.top <= window.innerHeight / 2) {
