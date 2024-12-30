@@ -39,7 +39,7 @@ export default function Home() {
         }
       });
 
-      if (closestSection) {
+      if (closestSection instanceof HTMLElement) {
         const sectionRect = closestSection.getBoundingClientRect();
         const sectionTop = sectionRect.top + window.scrollY - HEADER_HEIGHT;
         const distanceFromTop = Math.abs(scrollPosition - sectionTop);
@@ -65,7 +65,7 @@ export default function Home() {
         }
       }
 
-      if (contatoRef.current) {
+      if (contatoRef.current instanceof HTMLElement) {
         const contatoRect = contatoRef.current.getBoundingClientRect();
         if (contatoRect.top <= window.innerHeight / 2) {
           newCurrentSection = 'contato';
