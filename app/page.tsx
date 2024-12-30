@@ -25,7 +25,7 @@ export default function Home() {
 
     timeoutRef.current = setTimeout(() => {
       const scrollPosition = window.scrollY;
-      let closestSection = null;
+      let closestSection: HTMLElement | null = null;
       let minDistance = Infinity;
 
       sections.forEach((sectionId) => {
@@ -46,8 +46,7 @@ export default function Home() {
         const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
         
         if (distanceFromTop <= 80 && !isAtBottom) {
-          const y = sectionTop;
-          window.scrollTo({ top: y, behavior: 'smooth' });
+          window.scrollTo({ top: sectionTop, behavior: 'smooth' });
         }
       }
     }, 150);
