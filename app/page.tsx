@@ -25,13 +25,13 @@ export default function Home() {
 
     timeoutRef.current = setTimeout(() => {
       const scrollPosition = window.scrollY;
-      let closestSection: HTMLElement | null = null;
+      let closestSection: Element | null = null;
       let minDistance = Infinity;
 
       sections.forEach((sectionId) => {
         const section = document.getElementById(sectionId);
         if (section) {
-          const sectionTop = section.offsetTop - HEADER_HEIGHT;
+          const sectionTop = section.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
           const distance = Math.abs(scrollPosition - sectionTop);
           if (distance < minDistance) {
             minDistance = distance;
@@ -41,7 +41,8 @@ export default function Home() {
       });
 
       if (closestSection) {
-        const sectionTop = closestSection.offsetTop - HEADER_HEIGHT;
+        const sectionRect = closestSection.getBoundingClientRect();
+        const sectionTop = sectionRect.top + window.scrollY - HEADER_HEIGHT;
         const distanceFromTop = Math.abs(scrollPosition - sectionTop);
         const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
         
@@ -59,7 +60,7 @@ export default function Home() {
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i]);
-        if (section && scrollPosition >= section.offsetTop + section.offsetHeight / 2) {
+        if (section && scrollPosition >= section.getBoundingClientRect().top + window.scrollY + section.getBoundingClientRect().height / 2) {
           newCurrentSection = sections[i];
           break;
         }
@@ -77,7 +78,7 @@ export default function Home() {
 
       const heroSection = document.getElementById('hero')
       if (heroSection) {
-        const heroHeight = heroSection.offsetHeight
+        const heroHeight = heroSection.getBoundingClientRect().height
         const scrollPercentage = Math.min(window.scrollY / (heroHeight * 9/10), 1)
         setHeroOpacity(scrollPercentage)
       }
