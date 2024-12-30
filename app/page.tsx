@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import Header, { HEADER_HEIGHT } from '../components/Header';
 import Hero from '../components/Hero'
 import Problema from '../components/Problema'
@@ -13,24 +13,28 @@ import Footer from '../components/Footer'
 export default function Home() {
   const [currentSection, setCurrentSection] = useState('hero')
   const [heroOpacity, setHeroOpacity] = useState(0)
-  const sections = ['hero', 'problema', 'solucao', 'beneficios', 'implementacao', 'contato']
+  const sections = useMemo(() => ['hero', 'problema', 'solucao', 'beneficios', 'implementacao', 'contato'], [])
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const contatoRef = useRef<HTMLDivElement>(null);
 
-  const snapToNearestSection = () => {
+  const getElementTop = useCallback((element: Element): number => {
+    return element.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
+  }, []);
+
+  const snapToNearestSection = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
     timeoutRef.current = setTimeout(() => {
       const scrollPosition = window.scrollY;
-      let closestSection: HTMLElement | null = null;
+      let closestSection: Element | null = null;
       let minDistance = Infinity;
 
       sections.forEach((sectionId) => {
         const section = document.getElementById(sectionId);
-        if (section instanceof HTMLElement) {
-          const sectionTop = section.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
+        if (section) {
+          const sectionTop = getElementTop(section);
           const distance = Math.abs(scrollPosition - sectionTop);
           if (distance < minDistance) {
             minDistance = distance;
@@ -39,9 +43,8 @@ export default function Home() {
         }
       });
 
-      if (closestSection instanceof HTMLElement) {
-        const sectionRect = closestSection.getBoundingClientRect();
-        const sectionTop = sectionRect.top + window.scrollY - HEADER_HEIGHT;
+      if (closestSection) {
+        const sectionTop = getElementTop(closestSection);
         const distanceFromTop = Math.abs(scrollPosition - sectionTop);
         const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
         
@@ -50,7 +53,7 @@ export default function Home() {
         }
       }
     }, 150);
-  };
+  }, [getElementTop, sections]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,13 +62,16 @@ export default function Home() {
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i]);
-        if (section instanceof HTMLElement && scrollPosition >= section.getBoundingClientRect().top + window.scrollY + section.getBoundingClientRect().height / 2) {
-          newCurrentSection = sections[i];
-          break;
+        if (section) {
+          const sectionRect = section.getBoundingClientRect();
+          if (scrollPosition >= sectionRect.top + window.scrollY + sectionRect.height / 2) {
+            newCurrentSection = sections[i];
+            break;
+          }
         }
       }
 
-      if (contatoRef.current instanceof HTMLElement) {
+      if (contatoRef.current) {
         const contatoRect = contatoRef.current.getBoundingClientRect();
         if (contatoRect.top <= window.innerHeight / 2) {
           newCurrentSection = 'contato';
@@ -74,11 +80,11 @@ export default function Home() {
 
       setCurrentSection(newCurrentSection);
 
-      const heroSection = document.getElementById('hero')
-      if (heroSection instanceof HTMLElement) {
-        const heroHeight = heroSection.getBoundingClientRect().height
-        const scrollPercentage = Math.min(window.scrollY / (heroHeight * 9/10), 1)
-        setHeroOpacity(scrollPercentage)
+      const heroSection = document.getElementById('hero');
+      if (heroSection) {
+        const heroHeight = heroSection.getBoundingClientRect().height;
+        const scrollPercentage = Math.min(window.scrollY / (heroHeight * 9/10), 1);
+        setHeroOpacity(scrollPercentage);
       }
 
       snapToNearestSection();
@@ -87,16 +93,16 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll)
     handleScroll() // Call once to set initial state
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [sections, snapToNearestSection]);
 
-  const handleNavClick = (sectionId: string) => {
-    const section = document.getElementById(sectionId)
-    if (section instanceof HTMLElement) {
-      const yOffset = -HEADER_HEIGHT
-      const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset
-      window.scrollTo({ top: y, behavior: 'smooth' })
+  const handleNavClick = useCallback((sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const yOffset = -HEADER_HEIGHT;
+      const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
-  }
+  }, []);
 
   return (
     <main className="min-h-screen bg-gray-50">

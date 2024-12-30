@@ -45,7 +45,7 @@ export default function Beneficios({ currentSection }: BeneficiosProps) {
 
   return (
     <AnimatedSection id="beneficios" className="pt-16 pb-16 bg-white" style={{scrollMarginTop: `${HEADER_HEIGHT}px`}} softFade={true}>
-      <div ref={ref} className="container mx-auto px-6 max-w-5xl">
+      <div className="container mx-auto px-6 max-w-5xl">
         <AnimatedItem duration={0.8}>
           <h2 className="text-3xl font-bold text-center mb-8">
             Benefícios
@@ -89,12 +89,12 @@ export default function Beneficios({ currentSection }: BeneficiosProps) {
             </div>
           </AnimatedItem>
         </div>
-        <AnimatedItem delay={0.6} duration={0.6}>
+        <AnimatedItem delay={1.4} duration={0.8}>
           <div className="mt-16">
             <h3 className="text-2xl font-semibold mb-6 text-center">Características Exclusivas</h3>
             <div className="grid md:grid-cols-3 gap-8">
               {caracteristicas.map((item, index) => (
-                <AnimatedItem key={index} delay={0.4 + index * 0.2} duration={0.6}>
+                <AnimatedItem key={index} delay={1.5 + index * 0.1} duration={0.6}>
                   <div 
                     className="bg-white p-6 rounded-lg shadow-md text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col justify-between relative overflow-hidden cursor-pointer"
                     onClick={() => toggle(index)}
@@ -134,7 +134,7 @@ export default function Beneficios({ currentSection }: BeneficiosProps) {
             </div>
           </div>
         </AnimatedItem>
-        <AnimatedItem delay={0.6} duration={0.6}>
+        <AnimatedItem delay={2.0} duration={0.8}>
           <div 
             className="mt-12 bg-green-100 p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1 relative overflow-hidden cursor-pointer"
             onClick={() => toggle(caracteristicas.length)}

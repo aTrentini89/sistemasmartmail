@@ -33,8 +33,8 @@ export default function Implementacao({ currentSection }: ImplementacaoProps) {
 
   return (
     <AnimatedSection id="implementacao" className="pt-16 pb-16 bg-gray-100" style={{scrollMarginTop: `${HEADER_HEIGHT}px`}} softFade={true}>
-      <div ref={ref} className="container mx-auto px-6">
-        <AnimatedItem>
+      <div className="container mx-auto px-6">
+        <AnimatedItem duration={0.8}>
           <h2 className="text-3xl font-bold text-center mb-8">
             Implementação e Suporte
           </h2>
@@ -120,7 +120,7 @@ export default function Implementacao({ currentSection }: ImplementacaoProps) {
               </h3>
               <div className="flex flex-col md:flex-row justify-between items-center">
                 {cronograma.map((item, index) => (
-                  <AnimatedItem key={index} delay={0.4 + index * 0.1}>
+                  <AnimatedItem key={index} delay={0.7 + index * 0.1}>
                     <div className="flex flex-col items-center mb-4 md:mb-0 transition-all duration-300 hover:-translate-y-1">
                       <item.icon className={`w-10 h-10 mb-2 transition-colors duration-300 ${activeCards[etapas.length] ? 'text-white' : 'text-blue-600'}`} />
                       <h4 className={`font-semibold transition-colors duration-300 ${activeCards[etapas.length] ? 'text-white' : ''}`}>{item.title}</h4>

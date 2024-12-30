@@ -8,13 +8,15 @@ interface AnimatedItemProps {
   delay?: number;
   direction?: 'left' | 'right' | 'up';
   className?: string;
+  duration?: number;
 }
 
 export const AnimatedItem: React.FC<AnimatedItemProps> = ({ 
   children, 
   delay = 0, 
   direction = 'up',
-  className = ''
+  className = '',
+  duration = 0.5
 }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: false, amount: 0.3 })
@@ -39,7 +41,7 @@ export const AnimatedItem: React.FC<AnimatedItemProps> = ({
       animate={isInView ? "visible" : "hidden"}
       variants={variants}
       transition={{ 
-        duration: 0.5, 
+        duration, 
         delay,
         type: "spring",
         stiffness: 100,

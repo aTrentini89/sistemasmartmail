@@ -27,8 +27,8 @@ export default function Solucao({ currentSection }: SolucaoProps) {
 
   return (
     <AnimatedSection id="solucao" className="pt-16 pb-16 bg-gray-100" style={{scrollMarginTop: `${HEADER_HEIGHT}px`}} softFade={true}>
-      <div ref={ref} className="container mx-auto px-6">
-        <AnimatedItem>
+      <div className="container mx-auto px-6">
+        <AnimatedItem duration={0.8}>
           <h2 className="text-3xl font-bold text-center mb-8">
             Nossa Solução
           </h2>

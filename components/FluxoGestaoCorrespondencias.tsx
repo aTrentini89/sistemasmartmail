@@ -3,12 +3,19 @@
 import { Package, ScanBarcode, Building2, BoxSelect, Send, QrCode, MapPin, Truck } from 'lucide-react'
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
+import React, { ReactNode } from 'react';
 
 interface FluxoGestaoCorrespondenciasProps {
   className?: string;
 }
 
-const AnimatedItem = ({ children, delay = 0, isDesktop = false }) => {
+interface AnimatedItemProps {
+  children: ReactNode;
+  delay?: number;
+  isDesktop?: boolean;
+}
+
+const AnimatedItem: React.FC<AnimatedItemProps> = ({ children, delay = 0, isDesktop = false }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: false, amount: 0.3 })
 

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, memo, useCallback, forwardRef } fro
 import { QRCodeSVG } from 'qrcode.react'
 import { FaWhatsapp } from 'react-icons/fa'
 import { sendEmail } from '../app/actions/sendEmail'
-import { motion, AnimatePresence, useMotionValue, useTransform, useInView } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useTransform, useInView, MotionValue } from 'framer-motion'
 import { HEADER_HEIGHT } from './Header'
 import AnimatedSection from './AnimatedSection'
 import { FormProvider, useForm } from '../contexts/FormContext'
@@ -173,7 +173,7 @@ const CTA = forwardRef<HTMLDivElement, CTAProps>(({ currentSection, isLastSectio
                 </motion.a>
                 <AnimatedItem delay={0.5}>
                   <p className="text-sm mt-4 text-center text-white">
-                    Escaneie QR Code ou clique no Botão para falar conosco via WhatsApp
+                    Escaneie o QR Code para falar conosco via WhatsApp
                   </p>
                 </AnimatedItem>
               </motion.div>
@@ -185,7 +185,9 @@ const CTA = forwardRef<HTMLDivElement, CTAProps>(({ currentSection, isLastSectio
   )
 })
 
-export default CTA;
+CTA.displayName = 'CTA'
+
+export default CTA
 
 const IntelligentSystemBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -196,10 +198,9 @@ const IntelligentSystemBackground = () => {
   const nodeCount = 30
   const lineCount = 40
 
-  let seedValue = 123; // Variável mutável para o seed
+  let seedValue = 123;
   const random = (min: number, max: number) => {
     const x = Math.sin(seedValue++) * 10000;
-    // Round to 4 decimal places to ensure consistency
     return Number(((x - Math.floor(x)) * (max - min) + min).toFixed(4));
   };
 
@@ -217,7 +218,6 @@ const IntelligentSystemBackground = () => {
     x2: formatCoordinate(random(0, 100)),
     y2: formatCoordinate(random(0, 100)),
   }));
-
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -238,7 +238,7 @@ const IntelligentSystemBackground = () => {
   }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return; // Não executa no servidor
+    if (typeof window === 'undefined') return;
 
     const handleMouseMove = (event: MouseEvent) => {
       const container = containerRef.current
@@ -256,6 +256,12 @@ const IntelligentSystemBackground = () => {
       window.removeEventListener('mousemove', handleMouseMove)
     }
   }, [mouseX, mouseY])
+
+  const calculateDistance = useCallback((nodeX: number, nodeY: number) => {
+    const dx = mouseX.get() - (nodeX / 100) * dimensions.width;
+    const dy = mouseY.get() - (nodeY / 100) * dimensions.height;
+    return Math.sqrt(dx * dx + dy * dy);
+  }, [dimensions.width, dimensions.height, mouseX, mouseY]);
 
   return (
     <div ref={containerRef} className="absolute inset-0 w-full h-full overflow-hidden bg-gradient-to-b from-[#1e3a8a] via-[#0B1437] to-[#050A1C]">
@@ -285,43 +291,60 @@ const IntelligentSystemBackground = () => {
             }}
           />
         ))}
-        {nodes.map((node, i) => {
-          const distance = useTransform(
-            [mouseX, mouseY],
-            ([latestX, latestY]) => {
-              const dx = latestX - (node.x / 100) * dimensions.width
-              const dy = latestY - (node.y / 100) * dimensions.height
-              return Math.sqrt(dx * dx + dy * dy)
-            }
-          )
-          const scale = useTransform(distance, [0, 300], [1.5, 1])
-          const opacity = useTransform(distance, [0, 300], [1, 0.3])
-
-          return (
-            <motion.circle
-              key={`node-${i}`}
-              cx={`${node.x}%`}
-              cy={`${node.y}%`}
-              r={node.radius}
-              fill="url(#nodeGradient)"
-              style={{ scale, opacity }}
-              animate={{
-                cx: [`${node.x}%`, `${node.x + 1}%`],
-                cy: [`${node.y}%`, `${node.y + 1}%`],
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut"
-              }}
-            />
-          )
-        })}
+        {nodes.map((node, i) => (
+          <Node key={`node-${i}`} node={node} mouseX={mouseX} mouseY={mouseY} calculateDistance={calculateDistance} />
+        ))}
       </svg>
     </div>
   )
 }
+
+interface NodeProps {
+  node: { x: number; y: number; radius: number };
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
+  calculateDistance: (x: number, y: number) => number;
+}
+
+const Node: React.FC<NodeProps> = ({ node, mouseX, mouseY, calculateDistance }) => {
+  const distance = useMotionValue(0);
+  const scale = useTransform(distance, [0, 300], [1.5, 1]);
+  const opacity = useTransform(distance, [0, 300], [1, 0.3]);
+
+  useEffect(() => {
+    const updateDistance = () => {
+      distance.set(calculateDistance(node.x, node.y));
+    };
+    const unsubscribeX = mouseX.onChange(updateDistance);
+    const unsubscribeY = mouseY.onChange(updateDistance);
+    return () => {
+      unsubscribeX();
+      unsubscribeY();
+    };
+  }, [node.x, node.y, distance, mouseX, mouseY, calculateDistance]);
+
+  return (
+    <motion.circle
+      cx={`${node.x}%`}
+      cy={`${node.y}%`}
+      r={node.radius}
+      fill="url(#nodeGradient)"
+      style={{ scale, opacity }}
+      animate={{
+        cx: [`${node.x}%`, `${node.x + 1}%`],
+        cy: [`${node.y}%`, `${node.y + 1}%`],
+      }}
+      transition={{
+        duration: 10,
+        repeat: Infinity,
+        repeatType: "reverse",
+        ease: "easeInOut"
+      }}
+    />
+  );
+};
+
+IntelligentSystemBackground.displayName = 'IntelligentSystemBackground'
 
 const MemoizedIntelligentSystemBackground = memo(IntelligentSystemBackground)
 
@@ -389,6 +412,8 @@ const ContactForm = memo(() => {
     </motion.form>
   )
 })
+
+ContactForm.displayName = 'ContactForm'
 
 const formVariants = {
   hidden: { opacity: 0, y: 20 },
