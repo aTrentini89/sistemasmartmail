@@ -29,7 +29,7 @@ export default function Home() {
 
       sections.forEach((sectionId) => {
         const section = document.getElementById(sectionId);
-        if (section) {
+        if (section instanceof HTMLElement) {
           const sectionTop = section.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
           const distance = Math.abs(scrollPosition - sectionTop);
           if (distance < minDistance) {
@@ -59,7 +59,7 @@ export default function Home() {
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i]);
-        if (section && scrollPosition >= section.getBoundingClientRect().top + window.scrollY + section.getBoundingClientRect().height / 2) {
+        if (section instanceof HTMLElement && scrollPosition >= section.getBoundingClientRect().top + window.scrollY + section.getBoundingClientRect().height / 2) {
           newCurrentSection = sections[i];
           break;
         }
@@ -75,7 +75,7 @@ export default function Home() {
       setCurrentSection(newCurrentSection);
 
       const heroSection = document.getElementById('hero')
-      if (heroSection) {
+      if (heroSection instanceof HTMLElement) {
         const heroHeight = heroSection.getBoundingClientRect().height
         const scrollPercentage = Math.min(window.scrollY / (heroHeight * 9/10), 1)
         setHeroOpacity(scrollPercentage)
@@ -91,7 +91,7 @@ export default function Home() {
 
   const handleNavClick = (sectionId: string) => {
     const section = document.getElementById(sectionId)
-    if (section) {
+    if (section instanceof HTMLElement) {
       const yOffset = -HEADER_HEIGHT
       const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset
       window.scrollTo({ top: y, behavior: 'smooth' })
