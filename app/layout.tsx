@@ -1,7 +1,6 @@
 import '../styles/globals.css'
 import { Inter } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
-import Script from 'next/script'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -20,6 +19,9 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover'
 }
 
 export default function RootLayout({
@@ -29,16 +31,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-100`}>
-        <div id="root">{children}</div>
+      <head>
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+      </head>
+      <body className={`${inter.className} bg-gray-100 overflow-x-hidden w-full`}>
+        <div id="root" className="relative w-full overflow-x-hidden">
+          {children}
+        </div>
         <div id="final"></div>
-        <Script id="scroll-to-bottom">
-          {`
-            if (window.location.hash === '#final') {
-              window.scrollTo(0, document.body.scrollHeight);
-            }
-          `}
-        </Script>
       </body>
     </html>
   )
