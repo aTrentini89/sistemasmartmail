@@ -55,7 +55,7 @@ export default function Contato() {
         </div>
       </div>
       <div className="mt-8 text-center">
-        <Link href="/#final" className="text-blue-600 hover:text-blue-800 hover:underline">
+        <Link href="/" className="text-blue-600 hover:text-blue-800 hover:underline">
           Voltar para a página inicial
         </Link>
       </div>
