@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 @layer base {
   :root {
@@ -58,7 +58,7 @@
   }
 }
 
-/* Disable text selection by default */
+/* Desabilitar seleção de texto por padrão */
 * {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -67,7 +67,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Allow text selection for specific elements */
+/* Permitir seleção de texto para elementos específicos */
 .allow-select {
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -75,7 +75,7 @@
   user-select: text;
 }
 
-/* Prevent horizontal overflow */
+/* Prevenir overflow horizontal */
 html, body {
   max-width: 100%;
   overflow-x: hidden;

@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import DynamicTextReveal from './DynamicTextReveal'
 
 const shadowStyle = `
   @layer utilities {
@@ -20,9 +21,30 @@ export default function Hero({ opacity }: { opacity: number }) {
   const y = useTransform(scrollY, [0, 500], [0, 150])
   const [isMounted, setIsMounted] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const [key, setKey] = useState(0)
 
   useEffect(() => {
     setIsMounted(true)
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setKey(prev => prev + 1)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (heroRef.current) {
+      observer.observe(heroRef.current)
+    }
+
+    return () => {
+      if (heroRef.current) {
+        observer.unobserve(heroRef.current)
+      }
+    }
   }, [])
 
   if (!isMounted) {
@@ -34,7 +56,11 @@ export default function Hero({ opacity }: { opacity: number }) {
       <style jsx global>
         {shadowStyle}
       </style>
-      <section id="hero" className="relative bg-blue-600 text-white overflow-hidden min-h-[calc(100vh-64px)] flex items-center justify-center">
+      <section 
+        id="hero" 
+        className="relative overflow-hidden min-h-[calc(100vh-64px)] flex items-center justify-center"
+        ref={heroRef}
+      >
         <motion.div 
           className="absolute inset-0 z-0 overflow-hidden"
           style={{ y }}
@@ -55,13 +81,14 @@ export default function Hero({ opacity }: { opacity: number }) {
             }}
           />
         </motion.div>
+        <DynamicTextReveal key={key} containerRef={heroRef} />
         <div 
           className="relative z-10 container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col items-center justify-center transition-opacity duration-300 h-full"
           style={{ opacity: 1 - opacity }}
         >
           <div className="w-full text-center mb-8">
             <motion.h1 
-              className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 text-center text-shadow-lg"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 text-center text-shadow-lg text-white"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -69,7 +96,7 @@ export default function Hero({ opacity }: { opacity: number }) {
               Sistema Smart Mail
             </motion.h1>
             <motion.p 
-              className="text-lg md:text-xl lg:text-2xl mb-8 text-center text-shadow-md"
+              className="text-lg md:text-xl lg:text-2xl mb-8 text-center text-shadow-md text-white"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
